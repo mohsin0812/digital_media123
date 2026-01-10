@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Distribution Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>MediaShare</h1>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="#" id="homeLink" class="nav-link">Home</a>
+                <a href="#" id="searchLink" class="nav-link">Search</a>
+                <span id="authSection">
+                    <a href="#" id="loginLink" class="nav-link">Login</a>
+                    <a href="#" id="registerLink" class="nav-link">Register</a>
+                </span>
+                <span id="userSection" style="display: none;">
+                    <a href="#" id="adminDashboardLink" class="nav-link" style="display: none;">Admin Dashboard</a>
+                    <a href="#" id="creatorDashboardLink" class="nav-link" style="display: none;">Creator Dashboard</a>
+                    <a href="#" id="consumerDashboardLink" class="nav-link" style="display: none;">Consumer Dashboard</a>
+                    <a href="#" id="logoutLink" class="nav-link">Logout</a>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email:</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password:</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                <div id="loginError" class="error-message"></div>
+            </div>
+        </div>
+
+        <!-- Register Modal -->
+        <div id="registerModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Register</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="registerUsername">Username:</label>
+                        <input type="text" id="registerUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email:</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Password:</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerRole">Role:</label>
+                        <select id="registerRole" required>
+                            <option value="consumer">Consumer</option>
+                            <option value="creator">Creator</option>
+                        </select>
+                        <small style="color: #666; font-size: 0.85rem; display: block; margin-top: 0.25rem;">
+                            Choose Consumer to browse and interact with media, or Creator to upload and manage your own media.
+                        </small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </form>
+                <div id="registerError" class="error-message"></div>
+            </div>
+        </div>
+
+        <!-- Home View -->
+        <div id="homeView" class="view">
+            <div class="container">
+                <h2>Welcome to MediaShare</h2>
+                <p>Discover and share amazing media from creators around the world</p>
+                <div class="category-filters">
+                    <button class="category-btn active" data-category="all" data-view="home">All</button>
+                    <button class="category-btn" data-category="photo" data-view="home">Photos</button>
+                    <button class="category-btn" data-category="video" data-view="home">Videos</button>
+                </div>
+                <div id="photosGrid" class="photos-grid"></div>
+                <div id="loadingIndicator" class="loading">Loading media...</div>
+                <div id="loadMoreContainer" style="text-align: center; margin-top: 20px;">
+                    <button id="loadMoreBtn" class="btn btn-secondary" style="display: none;">Load More</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search View -->
+        <div id="searchView" class="view" style="display: none;">
+            <div class="container">
+                <h2>Search Photos</h2>
+                <div class="search-form">
+                    <input type="text" id="searchQuery" placeholder="Search by title, caption, or people...">
+                    <input type="text" id="searchLocation" placeholder="Filter by location...">
+                    <input type="text" id="searchCreator" placeholder="Filter by creator username...">
+                    <button id="searchBtn" class="btn btn-primary">Search</button>
+                </div>
+                <div id="searchResults" class="photos-grid"></div>
+                <div id="searchLoading" class="loading" style="display: none;">Searching...</div>
+            </div>
+        </div>
+
+        <!-- Creator Dashboard -->
+        <div id="creatorDashboardView" class="view" style="display: none;">
+            <div class="container">
+                <h2>Creator Dashboard</h2>
+                <div class="upload-section">
+                    <h3>Upload New Media</h3>
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="photoFile">Photo or Video:</label>
+                            <input type="file" id="photoFile" accept="image/*,video/*" required>
+                            <small style="color: #666; font-size: 0.85rem; display: block; margin-top: 0.25rem;">
+                                Supported formats: Images (JPEG, PNG, GIF, WebP) or Videos (MP4, WebM, OGG, MOV). Max size: 100MB
+                            </small>
+                        </div>
+                        <div class="form-group">
+                            <label for="photoTitle">Title: *</label>
+                            <input type="text" id="photoTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="photoCaption">Caption:</label>
+                            <textarea id="photoCaption" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="photoLocation">Location:</label>
+                            <input type="text" id="photoLocation">
+                        </div>
+                        <div class="form-group">
+                            <label for="photoPeople">People (comma-separated):</label>
+                            <input type="text" id="photoPeople" placeholder="e.g., John Doe, Jane Smith">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload Photo</button>
+                    </form>
+                    <div id="uploadError" class="error-message"></div>
+                    <div id="uploadSuccess" class="success-message"></div>
+                </div>
+                <div class="my-photos-section">
+                    <h3>My Photos</h3>
+                    <div id="myPhotosGrid" class="photos-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboardView" class="view" style="display: none;">
+            <div class="container">
+                <h2>Admin Dashboard</h2>
+                
+                <!-- Upload Section (Admin can upload like creators) -->
+                <div class="upload-section">
+                    <h3>Upload New Media</h3>
+                    <form id="adminUploadForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="adminPhotoFile">Photo or Video:</label>
+                            <input type="file" id="adminPhotoFile" accept="image/*,video/*" required>
+                            <small style="color: #666; font-size: 0.85rem; display: block; margin-top: 0.25rem;">
+                                Supported formats: Images (JPEG, PNG, GIF, WebP) or Videos (MP4, WebM, OGG, MOV). Max size: 100MB
+                            </small>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPhotoTitle">Title: *</label>
+                            <input type="text" id="adminPhotoTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPhotoCaption">Caption:</label>
+                            <textarea id="adminPhotoCaption" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPhotoLocation">Location:</label>
+                            <input type="text" id="adminPhotoLocation">
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPhotoPeople">People (comma-separated):</label>
+                            <input type="text" id="adminPhotoPeople" placeholder="e.g., John Doe, Jane Smith">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload Media</button>
+                    </form>
+                    <div id="adminUploadError" class="error-message"></div>
+                    <div id="adminUploadSuccess" class="success-message"></div>
+                </div>
+                
+                <!-- My Uploads Section -->
+                <div class="my-photos-section" style="margin-top: 40px;">
+                    <h3>My Uploaded Media</h3>
+                    <div id="adminPhotosGrid" class="photos-grid"></div>
+                </div>
+                
+                <!-- User Management Section -->
+                <div class="admin-section" style="margin-top: 40px;">
+                    <h3>User Management</h3>
+                    <p style="color: #666; margin-bottom: 20px;">Note: Creators can also register themselves through the Register button. You can still create creator accounts here if needed.</p>
+                    <form id="createCreatorForm">
+                        <div class="form-group">
+                            <label for="creatorUsername">Username: *</label>
+                            <input type="text" id="creatorUsername" required placeholder="Enter username">
+                        </div>
+                        <div class="form-group">
+                            <label for="creatorEmail">Email: *</label>
+                            <input type="email" id="creatorEmail" required placeholder="Enter email">
+                        </div>
+                        <div class="form-group">
+                            <label for="creatorPassword">Password: *</label>
+                            <input type="password" id="creatorPassword" required placeholder="Enter password">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Creator Account</button>
+                    </form>
+                    <div id="createCreatorError" class="error-message"></div>
+                    <div id="createCreatorSuccess" class="success-message"></div>
+                </div>
+                
+                <!-- All Users List -->
+                <div class="admin-section" style="margin-top: 40px;">
+                    <h3>All Users</h3>
+                    <button id="loadUsersBtn" class="btn btn-secondary">Load All Users</button>
+                    <div id="usersList" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consumer Dashboard -->
+        <div id="consumerDashboardView" class="view" style="display: none;">
+            <div class="container">
+                <h2>Consumer Dashboard</h2>
+                
+                <!-- Upload Section (Consumers can now upload like creators) -->
+                <div class="upload-section">
+                    <h3>Upload New Media</h3>
+                    <form id="consumerUploadForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="consumerPhotoFile">Photo or Video:</label>
+                            <input type="file" id="consumerPhotoFile" accept="image/*,video/*" required>
+                            <small style="color: #666; font-size: 0.85rem; display: block; margin-top: 0.25rem;">
+                                Supported formats: Images (JPEG, PNG, GIF, WebP) or Videos (MP4, WebM, OGG, MOV). Max size: 100MB
+                            </small>
+                        </div>
+                        <div class="form-group">
+                            <label for="consumerPhotoTitle">Title: *</label>
+                            <input type="text" id="consumerPhotoTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="consumerPhotoCaption">Caption:</label>
+                            <textarea id="consumerPhotoCaption" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="consumerPhotoLocation">Location:</label>
+                            <input type="text" id="consumerPhotoLocation">
+                        </div>
+                        <div class="form-group">
+                            <label for="consumerPhotoPeople">People (comma-separated):</label>
+                            <input type="text" id="consumerPhotoPeople" placeholder="e.g., John Doe, Jane Smith">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload Media</button>
+                    </form>
+                    <div id="consumerUploadError" class="error-message"></div>
+                    <div id="consumerUploadSuccess" class="success-message"></div>
+                </div>
+                
+                <!-- My Uploads Section -->
+                <div class="my-photos-section" style="margin-top: 40px;">
+                    <h3>My Uploaded Media</h3>
+                    <div id="consumerMyPhotosGrid" class="photos-grid"></div>
+                </div>
+                
+                <!-- Browse All Media Section -->
+                <div style="margin-top: 40px;">
+                    <h3>Browse All Media</h3>
+                    <p>Browse, search, comment, and rate media from all users</p>
+                    <div class="category-filters">
+                        <button class="category-btn active" data-category="all" data-view="consumer">All</button>
+                        <button class="category-btn" data-category="photo" data-view="consumer">Photos</button>
+                        <button class="category-btn" data-category="video" data-view="consumer">Videos</button>
+                    </div>
+                    <div id="consumerLoadingIndicator" class="loading" style="display: block;">Loading media...</div>
+                    <div id="consumerPhotosGrid" class="photos-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo Detail Modal -->
+        <div id="photoDetailModal" class="modal">
+            <div class="modal-content modal-large">
+                <span class="close">&times;</span>
+                <div id="photoDetailContent"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
